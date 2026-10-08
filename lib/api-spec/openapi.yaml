@@ -1,15 +1,14 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: AcxiomCRM REST API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: crm
 paths:
   /healthz:
     get:
@@ -24,6 +23,371 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /me:
+    get:
+      operationId: getMe
+      tags: [crm]
+      summary: Get the signed-in user's CRM profile
+      responses:
+        "200":
+          description: Current profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags: [crm]
+      summary: CRM dashboard totals, pipeline and recent activity
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dashboard"
+  /customers:
+    get:
+      operationId: getCustomers
+      tags: [crm]
+      parameters:
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: status
+          schema: { type: string, enum: [active, inactive] }
+      responses:
+        "200":
+          description: Customer records
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Customer" }
+    post:
+      operationId: createCustomer
+      tags: [crm]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CustomerInput" }
+      responses:
+        "201":
+          description: Created customer
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Customer" }
+  /customers/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: integer }
+    patch:
+      operationId: updateCustomer
+      tags: [crm]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CustomerInput" }
+      responses:
+        "200":
+          description: Updated customer
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Customer" }
+    delete:
+      operationId: deleteCustomer
+      tags: [crm]
+      responses:
+        "204": { description: Deleted customer }
+  /leads:
+    get:
+      operationId: getLeads
+      tags: [crm]
+      parameters:
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: status
+          schema: { type: string, enum: [new, contacted, qualified, lost, converted] }
+      responses:
+        "200":
+          description: Lead records
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Lead" }
+    post:
+      operationId: createLead
+      tags: [crm]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LeadInput" }
+      responses:
+        "201":
+          description: Created lead
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Lead" }
+  /leads/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: integer }
+    patch:
+      operationId: updateLead
+      tags: [crm]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LeadInput" }
+      responses:
+        "200":
+          description: Updated lead
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Lead" }
+    delete:
+      operationId: deleteLead
+      tags: [crm]
+      responses:
+        "204": { description: Deleted lead }
+  /leads/{id}/convert:
+    post:
+      operationId: convertLead
+      tags: [crm]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Converted customer and opportunity
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LeadConversion" }
+  /opportunities:
+    get:
+      operationId: getOpportunities
+      tags: [crm]
+      parameters:
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: stage
+          schema: { type: string }
+      responses:
+        "200":
+          description: Opportunity records
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Opportunity" }
+    post:
+      operationId: createOpportunity
+      tags: [crm]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OpportunityInput" }
+      responses:
+        "201":
+          description: Created opportunity
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Opportunity" }
+  /opportunities/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: integer }
+    patch:
+      operationId: updateOpportunity
+      tags: [crm]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OpportunityInput" }
+      responses:
+        "200":
+          description: Updated opportunity
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Opportunity" }
+    delete:
+      operationId: deleteOpportunity
+      tags: [crm]
+      responses:
+        "204": { description: Deleted opportunity }
+  /follow-ups:
+    get:
+      operationId: getFollowUps
+      tags: [crm]
+      parameters:
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: status
+          schema: { type: string, enum: [planned, completed] }
+      responses:
+        "200":
+          description: Follow-up records
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/FollowUp" }
+    post:
+      operationId: createFollowUp
+      tags: [crm]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FollowUpInput" }
+      responses:
+        "201":
+          description: Created follow-up
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FollowUp" }
+  /follow-ups/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: integer }
+    patch:
+      operationId: updateFollowUp
+      tags: [crm]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FollowUpInput" }
+      responses:
+        "200":
+          description: Updated follow-up
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FollowUp" }
+    delete:
+      operationId: deleteFollowUp
+      tags: [crm]
+      responses:
+        "204": { description: Deleted follow-up }
+  /activities:
+    get:
+      operationId: getActivities
+      tags: [crm]
+      responses:
+        "200":
+          description: Recent business activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Activity" }
+    post:
+      operationId: createActivity
+      tags: [crm]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ActivityInput" }
+      responses:
+        "201":
+          description: Created activity
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Activity" }
+  /audit:
+    get:
+      operationId: getAudit
+      tags: [crm]
+      responses:
+        "200":
+          description: Audit history
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AuditEntry" }
+  /reports:
+    get:
+      operationId: getReports
+      tags: [crm]
+      responses:
+        "200":
+          description: Sales report aggregates
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reports" }
+  /users:
+    get:
+      operationId: getUsers
+      tags: [crm]
+      responses:
+        "200":
+          description: CRM user accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/User" }
+    post:
+      operationId: createUserProfile
+      tags: [crm]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UserInput" }
+      responses:
+        "201":
+          description: Created CRM role assignment
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/User" }
+  /users/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: integer }
+    patch:
+      operationId: updateUserProfile
+      tags: [crm]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UserInput" }
+      responses:
+        "200":
+          description: Updated role assignment
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/User" }
 components:
   schemas:
     HealthStatus:
@@ -33,4 +397,211 @@ components:
           type: string
       required:
         - status
+    User:
+      type: object
+      required: [id, clerkUserId, name, email, role, isActive]
+      properties:
+        id: { type: integer }
+        clerkUserId: { type: string }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string, enum: [Admin, Manager, SalesExecutive] }
+        isActive: { type: boolean }
+    Dashboard:
+      type: object
+      required: [customerCount, leadCount, openOpportunityCount, pipelineValue, wonValue, followUpsDue, stages, recentActivity]
+      properties:
+        customerCount: { type: integer }
+        leadCount: { type: integer }
+        openOpportunityCount: { type: integer }
+        pipelineValue: { type: number }
+        wonValue: { type: number }
+        followUpsDue: { type: integer }
+        stages:
+          type: array
+          items: { $ref: "#/components/schemas/StageTotal" }
+        recentActivity:
+          type: array
+          items: { $ref: "#/components/schemas/Activity" }
+    StageTotal:
+      type: object
+      required: [stage, count, value]
+      properties:
+        stage: { type: string }
+        count: { type: integer }
+        value: { type: number }
+    Customer:
+      type: object
+      required: [id, name, company, email, phone, status, source, ownerId, ownerName, notes, createdAt, updatedAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        company: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string, minLength: 7, maxLength: 30 }
+        status: { type: string, enum: [active, inactive] }
+        source: { type: string }
+        ownerId: { type: string }
+        ownerName: { type: string }
+        notes: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    CustomerInput:
+      type: object
+      required: [name, company, email, phone, status, source, notes]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        company: { type: string, maxLength: 120 }
+        email: { type: string, format: email }
+        phone: { type: string, minLength: 7, maxLength: 30 }
+        status: { type: string, enum: [active, inactive] }
+        source: { type: string, maxLength: 80 }
+        notes: { type: string, maxLength: 2000 }
+    Lead:
+      type: object
+      required: [id, name, company, email, phone, source, status, value, ownerId, ownerName, notes, createdAt, updatedAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        company: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string, minLength: 7, maxLength: 30 }
+        source: { type: string }
+        status: { type: string, enum: [new, contacted, qualified, lost, converted] }
+        value: { type: ["number", "null"] }
+        ownerId: { type: string }
+        ownerName: { type: string }
+        notes: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    LeadInput:
+      type: object
+      required: [name, company, email, phone, source, status, notes]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        company: { type: string, maxLength: 120 }
+        email: { type: string, format: email }
+        phone: { type: string, minLength: 7, maxLength: 30 }
+        source: { type: string, maxLength: 80 }
+        status: { type: string, enum: [new, contacted, qualified, lost, converted] }
+        value: { type: ["number", "null"], minimum: 0 }
+        notes: { type: string, maxLength: 2000 }
+    Opportunity:
+      type: object
+      required: [id, title, customerId, customerName, leadId, amount, probability, stage, closeDate, ownerId, ownerName, createdAt, updatedAt]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        customerId: { type: ["integer", "null"] }
+        customerName: { type: string }
+        leadId: { type: ["integer", "null"] }
+        amount: { type: number }
+        probability: { type: integer }
+        stage: { type: string, enum: [prospecting, qualification, proposal, negotiation, won, lost] }
+        closeDate: { type: string, format: date }
+        ownerId: { type: string }
+        ownerName: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    OpportunityInput:
+      type: object
+      required: [title, customerId, leadId, amount, probability, stage, closeDate]
+      properties:
+        title: { type: string, minLength: 2, maxLength: 160 }
+        customerId: { type: ["integer", "null"] }
+        leadId: { type: ["integer", "null"] }
+        amount: { type: number, exclusiveMinimum: 0 }
+        probability: { type: integer, minimum: 0, maximum: 100 }
+        stage: { type: string, enum: [prospecting, qualification, proposal, negotiation, won, lost] }
+        closeDate: { type: string, format: date }
+    FollowUp:
+      type: object
+      required: [id, title, dueDate, status, type, relatedType, relatedId, relatedName, ownerId, ownerName, createdAt]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        dueDate: { type: string, format: date }
+        status: { type: string, enum: [planned, completed] }
+        type: { type: string, enum: [call, email, meeting, task] }
+        relatedType: { type: string, enum: [customer, lead, opportunity] }
+        relatedId: { type: ["integer", "null"] }
+        relatedName: { type: string }
+        ownerId: { type: string }
+        ownerName: { type: string }
+        createdAt: { type: string, format: date-time }
+    FollowUpInput:
+      type: object
+      required: [title, dueDate, status, type, relatedType, relatedId, relatedName]
+      properties:
+        title: { type: string, minLength: 2, maxLength: 160 }
+        dueDate: { type: string, format: date }
+        status: { type: string, enum: [planned, completed] }
+        type: { type: string, enum: [call, email, meeting, task] }
+        relatedType: { type: string, enum: [customer, lead, opportunity] }
+        relatedId: { type: ["integer", "null"] }
+        relatedName: { type: string, maxLength: 160 }
+    Activity:
+      type: object
+      required: [id, type, description, targetType, targetId, createdAt, userName]
+      properties:
+        id: { type: integer }
+        type: { type: string }
+        description: { type: string }
+        targetType: { type: string }
+        targetId: { type: ["integer", "null"] }
+        createdAt: { type: string, format: date-time }
+        userName: { type: string }
+    ActivityInput:
+      type: object
+      required: [type, description, targetType, targetId]
+      properties:
+        type: { type: string, enum: [call, email, meeting, note, task] }
+        description: { type: string, minLength: 2, maxLength: 1200 }
+        targetType: { type: string, maxLength: 40 }
+        targetId: { type: ["integer", "null"] }
+    AuditEntry:
+      type: object
+      required: [id, action, entity, entityId, description, userName, createdAt]
+      properties:
+        id: { type: integer }
+        action: { type: string }
+        entity: { type: string }
+        entityId: { type: ["integer", "null"] }
+        description: { type: string }
+        userName: { type: string }
+        createdAt: { type: string, format: date-time }
+    LeadConversion:
+      type: object
+      required: [customer, opportunity]
+      properties:
+        customer: { $ref: "#/components/schemas/Customer" }
+        opportunity: { $ref: "#/components/schemas/Opportunity" }
+    Reports:
+      type: object
+      required: [pipelineByStage, leadsByStatus, conversionRate, topOwners]
+      properties:
+        pipelineByStage:
+          type: array
+          items: { $ref: "#/components/schemas/StageTotal" }
+        leadsByStatus:
+          type: array
+          items: { $ref: "#/components/schemas/CountByLabel" }
+        conversionRate: { type: number }
+        topOwners:
+          type: array
+          items: { $ref: "#/components/schemas/CountByLabel" }
+    CountByLabel:
+      type: object
+      required: [label, count]
+      properties:
+        label: { type: string }
+        count: { type: number }
+    UserInput:
+      type: object
+      required: [name, email, role, isActive]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        email: { type: string, format: email }
+        role: { type: string, enum: [Admin, Manager, SalesExecutive] }
+        isActive: { type: boolean }
 

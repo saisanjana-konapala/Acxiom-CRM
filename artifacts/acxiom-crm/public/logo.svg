@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 42">
+  <rect width="180" height="42" rx="8" fill="#fffefa"/>
+  <g transform="translate(10 9) rotate(-8 12 12)">
+    <rect width="10" height="10" rx="3" fill="#d99a54"/>
+    <rect x="13" width="10" height="10" rx="3" fill="#d99a54" opacity=".76"/>
+    <rect y="13" width="10" height="10" rx="3" fill="#d99a54" opacity=".62"/>
+    <rect x="13" y="13" width="10" height="10" rx="3" fill="#d99a54" opacity=".9"/>
+  </g>
+  <text x="44" y="27" fill="#26343b" font-family="Manrope, sans-serif" font-size="18" font-weight="700" letter-spacing="-.6">acxiom</text>
+  <text x="106" y="27" fill="#638173" font-family="Manrope, sans-serif" font-size="16" font-weight="500">CRM</text>
+</svg>

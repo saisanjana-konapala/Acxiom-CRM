@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "AcxiomCRM"
+description = "A practical CRM for teams to manage customers, leads, opportunities, follow-ups, and sales activity with role-based access and reporting."
+version = "1.0.0"
+id = "artifacts/acxiom-crm"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24934
+
+[services.development]
+run = "pnpm --filter @workspace/acxiom-crm run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/acxiom-crm", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/acxiom-crm/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24934"
+BASE_PATH = "/"
